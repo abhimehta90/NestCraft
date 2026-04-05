@@ -1,1002 +1,506 @@
 <!DOCTYPE html>
 <html lang="en" data-theme="light">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>NestCraft — Abhishek & Neha's Home Decision Lab</title>
-  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🏡</text></svg>">
-  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.7/dist/chart.umd.min.js"></script>
-  <style>
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600;700&family=Outfit:wght@300;400;500;600;700;800&display=swap');
-
-:root {
-  --bg: #f5f6fa;
-  --card: #ffffff;
-  --card-hover: #fafbff;
-  --input-bg: #f0f1f5;
-  --header-bg: linear-gradient(135deg, #0f0c29 0%, #302b63 50%, #24243e 100%);
-  --text: #1e1e2e;
-  --text-secondary: #5c5f77;
-  --text-muted: #9294a5;
-  --border: #e2e4ed;
-  --border-light: #eff0f5;
-  --accent: #6c5ce7;
-  --accent-light: #a29bfe;
-  --accent-hover: #5a4bd1;
-  --accent-glow: rgba(108, 92, 231, 0.2);
-  --success: #00b894;
-  --success-light: rgba(0, 184, 148, 0.1);
-  --danger: #ff6b6b;
-  --danger-light: rgba(255, 107, 107, 0.1);
-  --warning: #ffc048;
-  --warning-light: rgba(255, 192, 72, 0.1);
-  --info: #74b9ff;
-  --teal: #00cec9;
-  --orange: #fd9644;
-  --purple: #a29bfe;
-  --shadow: 0 4px 16px rgba(0,0,0,0.06), 0 1px 3px rgba(0,0,0,0.04);
-  --shadow-lg: 0 8px 32px rgba(0,0,0,0.08);
-  --radius: 16px;
-  --radius-sm: 10px;
-  --transition: 0.25s cubic-bezier(0.4, 0, 0.2, 1);
-}
-
-[data-theme="dark"] {
-  --bg: #0a0a1a;
-  --card: rgba(25, 25, 50, 0.8);
-  --card-hover: rgba(30, 30, 60, 0.9);
-  --input-bg: rgba(20, 20, 45, 0.9);
-  --text: #e8e8f0;
-  --text-secondary: #a0a0b8;
-  --text-muted: #6a6a80;
-  --border: rgba(60, 60, 100, 0.5);
-  --border-light: rgba(50, 50, 80, 0.3);
-  --shadow: 0 4px 16px rgba(0,0,0,0.3);
-}
-
-* { margin: 0; padding: 0; box-sizing: border-box; }
-
-body {
-  font-family: 'Inter', -apple-system, sans-serif;
-  background: var(--bg);
-  color: var(--text);
-  line-height: 1.6;
-  -webkit-font-smoothing: antialiased;
-}
-
-/* HEADER */
-.header {
-  background: var(--header-bg);
-  color: #fff;
-  padding: 0 32px;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  height: 60px;
-  position: sticky;
-  top: 0;
-  z-index: 100;
-}
-
-.logo { display: flex; align-items: center; gap: 12px; }
-
-.logo-icon {
-  width: 34px; height: 34px;
-  background: linear-gradient(135deg, var(--accent), var(--teal));
-  border-radius: 9px;
-  display: flex; align-items: center; justify-content: center;
-  font-size: 16px; font-weight: 800;
-  box-shadow: 0 2px 12px rgba(108, 92, 231, 0.4);
-}
-
-.header h1 { font-family: 'Outfit', sans-serif; font-size: 19px; font-weight: 700; }
-.header h1 .hl {
-  background: linear-gradient(135deg, var(--accent-light), var(--teal));
-  -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
-}
-.header .sub { font-size: 11px; color: rgba(255,255,255,0.45); }
-
-.theme-btn {
-  background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.15);
-  color: rgba(255,255,255,0.8); padding: 6px 14px; border-radius: 20px;
-  cursor: pointer; font-size: 12px; font-weight: 500; font-family: inherit;
-}
-
-/* TABS */
-.tabs {
-  display: flex; background: var(--card); border-bottom: 1px solid var(--border);
-  overflow-x: auto; scrollbar-width: none; padding: 0 24px;
-}
-.tabs::-webkit-scrollbar { display: none; }
-
-.tab {
-  padding: 14px 22px; border: none; background: none; color: var(--text-muted);
-  font-family: 'Inter', sans-serif; font-size: 13px; font-weight: 500;
-  cursor: pointer; white-space: nowrap; position: relative;
-}
-.tab:hover { color: var(--accent); }
-.tab.active { color: var(--accent); font-weight: 600; }
-.tab.active::after {
-  content: ''; position: absolute; bottom: -1px; left: 12px; right: 12px;
-  height: 2px; background: linear-gradient(90deg, var(--accent), var(--teal)); border-radius: 2px 2px 0 0;
-}
-
-/* CONTENT */
-.panel { display: none; padding: 28px; max-width: 1400px; margin: 0 auto; animation: fadeIn 0.3s ease; }
-.panel.active { display: block; }
-@keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
-
-/* CARDS */
-.card {
-  background: var(--card); border-radius: var(--radius); padding: 24px;
-  box-shadow: var(--shadow); border: 1px solid var(--border-light);
-  transition: var(--transition); position: relative; overflow: hidden;
-}
-.card:hover { box-shadow: var(--shadow-lg); transform: translateY(-1px); }
-.card::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px; background: transparent; transition: var(--transition); }
-.card:hover::before { background: linear-gradient(90deg, var(--accent), var(--teal)); }
-
-.card-title { font-family: 'Outfit'; font-size: 12px; font-weight: 600; text-transform: uppercase; letter-spacing: 1px; color: var(--text-muted); margin-bottom: 8px; }
-.card-value { font-family: 'Outfit'; font-size: 28px; font-weight: 700; letter-spacing: -0.5px; }
-.card-sub { font-size: 12px; color: var(--text-secondary); margin-top: 4px; }
-
-/* INPUTS */
-.inputs-card {
-  background: var(--card); border-radius: var(--radius); padding: 24px;
-  box-shadow: var(--shadow); border: 1px solid var(--border-light); margin-bottom: 24px;
-}
-.inputs-card h3 { font-family: 'Outfit'; font-size: 15px; font-weight: 600; margin-bottom: 18px; display: flex; align-items: center; gap: 8px; }
-.inputs-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 18px; }
-.inp-group { display: flex; flex-direction: column; gap: 5px; }
-.inp-group label { font-size: 11px; font-weight: 600; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 0.3px; }
-.inp-group input, .inp-group select {
-  padding: 8px 12px; border: 1.5px solid var(--border); border-radius: var(--radius-sm);
-  background: var(--input-bg); color: var(--text); font-size: 13px;
-  font-family: 'JetBrains Mono', monospace; font-weight: 500;
-}
-.inp-group input:focus { outline: none; border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-glow); }
-.inp-group .hint { font-size: 11px; color: var(--text-muted); font-family: 'Inter'; }
-
-/* LAYOUTS */
-.grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
-.grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
-.grid-4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; }
-.mb { margin-bottom: 24px; }
-.mt { margin-top: 24px; }
-
-/* PATH CARDS */
-.path-card {
-  background: var(--card); border-radius: var(--radius); padding: 0;
-  box-shadow: var(--shadow); border: 2px solid var(--border-light);
-  overflow: hidden; transition: var(--transition);
-}
-.path-card:hover { border-color: var(--accent-glow); box-shadow: var(--shadow-lg); }
-.path-header { padding: 20px 24px; color: #fff; }
-.path-header h3 { font-family: 'Outfit'; font-size: 17px; font-weight: 700; margin-bottom: 4px; }
-.path-header .path-sub { font-size: 12px; opacity: 0.8; }
-.path-body { padding: 20px 24px; }
-.path-stat { display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid var(--border-light); font-size: 13px; }
-.path-stat:last-child { border-bottom: none; }
-.path-stat .lbl { color: var(--text-secondary); }
-.path-stat .val { font-weight: 600; font-family: 'JetBrains Mono'; font-size: 13px; }
-
-.path-1 .path-header { background: linear-gradient(135deg, #6c5ce7, #a29bfe); }
-.path-2 .path-header { background: linear-gradient(135deg, #00b894, #55efc4); }
-.path-3 .path-header { background: linear-gradient(135deg, #fd9644, #ffc048); }
-
-/* INSIGHT BOX */
-.insight {
-  background: linear-gradient(135deg, rgba(108, 92, 231, 0.04), rgba(0, 206, 201, 0.04));
-  border: 1px solid rgba(108, 92, 231, 0.15); border-left: 4px solid var(--accent);
-  border-radius: var(--radius-sm); padding: 18px 22px; margin: 20px 0;
-}
-.insight h4 { font-family: 'Outfit'; color: var(--accent); font-size: 14px; margin-bottom: 6px; font-weight: 600; }
-.insight p { font-size: 13.5px; color: var(--text); line-height: 1.7; }
-.insight .callout { font-weight: 600; color: var(--accent); }
-.insight .good { color: var(--success); font-weight: 600; }
-.insight .bad { color: var(--danger); font-weight: 600; }
-
-/* TABLE */
-.table-wrap { overflow-x: auto; border-radius: var(--radius-sm); border: 1px solid var(--border); }
-table { width: 100%; border-collapse: collapse; font-size: 13px; }
-thead { background: var(--input-bg); position: sticky; top: 0; z-index: 1; }
-th { padding: 11px 14px; text-align: right; font-family: 'Outfit'; font-weight: 600; font-size: 11px; text-transform: uppercase; letter-spacing: 0.5px; color: var(--text-muted); border-bottom: 2px solid var(--border); white-space: nowrap; }
-th:first-child { text-align: left; }
-th.group-start { border-left: 2px solid var(--border); }
-td { padding: 10px 14px; text-align: right; border-bottom: 1px solid var(--border-light); font-family: 'JetBrains Mono'; font-size: 12px; font-weight: 500; }
-td:first-child { text-align: left; font-family: 'Inter'; font-weight: 600; }
-td.group-start { border-left: 2px solid var(--border-light); }
-tr:hover { background: var(--accent-glow) !important; }
-.best-cell { color: var(--success); font-weight: 700 !important; }
-.worst-cell { color: var(--danger); }
-
-/* CHART */
-.chart-card { background: var(--card); border-radius: var(--radius); padding: 24px; box-shadow: var(--shadow); border: 1px solid var(--border-light); }
-.chart-card h3 { font-family: 'Outfit'; font-size: 15px; font-weight: 600; margin-bottom: 16px; }
-.chart-box { position: relative; width: 100%; height: 320px; }
-
-/* SENSITIVITY */
-.sensitivity-row { display: flex; gap: 8px; align-items: center; margin-bottom: 8px; flex-wrap: wrap; }
-.sensitivity-row label { font-size: 12px; font-weight: 500; color: var(--text-secondary); min-width: 180px; }
-.sensitivity-row input[type="range"] { flex: 1; min-width: 120px; -webkit-appearance: none; height: 5px; border-radius: 3px; background: var(--border); cursor: pointer; }
-.sensitivity-row input[type="range"]::-webkit-slider-thumb {
-  -webkit-appearance: none; width: 18px; height: 18px; border-radius: 50%;
-  background: linear-gradient(135deg, var(--accent), var(--accent-light));
-  border: 3px solid var(--card); box-shadow: 0 2px 8px rgba(108, 92, 231, 0.35); cursor: pointer;
-}
-.sensitivity-row .val-display { font-family: 'JetBrains Mono'; font-size: 13px; font-weight: 600; min-width: 50px; text-align: right; color: var(--accent); }
-
-/* RESPONSIVE */
-@media (max-width: 1024px) { .grid-3, .grid-4 { grid-template-columns: 1fr; } .grid-2 { grid-template-columns: 1fr; } }
-@media (max-width: 768px) {
-  .header { padding: 0 16px; height: auto; padding: 12px 16px; }
-  .panel { padding: 16px; }
-  .inputs-grid { grid-template-columns: 1fr; }
-  .grid-3, .grid-2, .grid-4 { grid-template-columns: 1fr; }
-  .sub { display: none; }
-}
-  </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>NestCraft — Abhishek & Neha's Home Decision Lab</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🏡</text></svg>">
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.7/dist/chart.umd.min.js"></script>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&family=Outfit:wght@400;500;600;700;800&display=swap');
+:root{--bg:#f5f6fa;--card:#fff;--input:#f0f1f5;--hdr:linear-gradient(135deg,#0f0c29,#302b63 50%,#24243e);--tx:#1e1e2e;--tx2:#5c5f77;--txm:#9294a5;--bdr:#e2e4ed;--bdrl:#eff0f5;--ac:#6c5ce7;--acl:#a29bfe;--acg:rgba(108,92,231,.2);--ok:#00b894;--okl:rgba(0,184,148,.1);--no:#ff6b6b;--nol:rgba(255,107,107,.1);--warn:#ffc048;--teal:#00cec9;--or:#fd9644;--r:16px;--rs:10px;--sh:0 4px 16px rgba(0,0,0,.06);--shl:0 8px 32px rgba(0,0,0,.08);--tr:.25s cubic-bezier(.4,0,.2,1)}
+[data-theme=dark]{--bg:#0a0a1a;--card:rgba(25,25,50,.8);--input:rgba(20,20,45,.9);--tx:#e8e8f0;--tx2:#a0a0b8;--txm:#6a6a80;--bdr:rgba(60,60,100,.5);--bdrl:rgba(50,50,80,.3);--sh:0 4px 16px rgba(0,0,0,.3)}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:Inter,-apple-system,sans-serif;background:var(--bg);color:var(--tx);line-height:1.6;-webkit-font-smoothing:antialiased}
+.hdr{background:var(--hdr);color:#fff;padding:0 32px;display:flex;justify-content:space-between;align-items:center;height:58px;position:sticky;top:0;z-index:100}
+.logo{display:flex;align-items:center;gap:12px}
+.logo-i{width:32px;height:32px;background:linear-gradient(135deg,var(--ac),var(--teal));border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:800;box-shadow:0 2px 12px rgba(108,92,231,.4)}
+.hdr h1{font-family:Outfit;font-size:18px;font-weight:700}.hdr .hl{background:linear-gradient(135deg,var(--acl),var(--teal));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.hdr .sub{font-size:10px;color:rgba(255,255,255,.4)}.thm{background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.15);color:rgba(255,255,255,.8);padding:5px 12px;border-radius:20px;cursor:pointer;font-size:11px;font-family:inherit}
+.tabs{display:flex;background:var(--card);border-bottom:1px solid var(--bdr);overflow-x:auto;scrollbar-width:none;padding:0 24px}.tabs::-webkit-scrollbar{display:none}
+.tab{padding:13px 20px;border:none;background:none;color:var(--txm);font-family:Inter;font-size:13px;font-weight:500;cursor:pointer;white-space:nowrap;position:relative}
+.tab:hover{color:var(--ac)}.tab.active{color:var(--ac);font-weight:600}.tab.active::after{content:'';position:absolute;bottom:-1px;left:10px;right:10px;height:2px;background:linear-gradient(90deg,var(--ac),var(--teal));border-radius:2px 2px 0 0}
+.pnl{display:none;padding:24px;max-width:1440px;margin:0 auto;animation:fi .3s ease}.pnl.active{display:block}@keyframes fi{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+.card{background:var(--card);border-radius:var(--r);padding:22px;box-shadow:var(--sh);border:1px solid var(--bdrl);transition:var(--tr);position:relative;overflow:hidden}
+.card:hover{box-shadow:var(--shl)}.card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:transparent;transition:var(--tr)}.card:hover::before{background:linear-gradient(90deg,var(--ac),var(--teal))}
+.ct{font-family:Outfit;font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:1px;color:var(--txm);margin-bottom:6px}.cv{font-family:Outfit;font-size:26px;font-weight:700;letter-spacing:-.5px}.cs{font-size:11px;color:var(--tx2);margin-top:3px}
+.inp-card{background:var(--card);border-radius:var(--r);padding:20px;box-shadow:var(--sh);border:1px solid var(--bdrl);margin-bottom:20px}
+.inp-card h3{font-family:Outfit;font-size:14px;font-weight:600;margin-bottom:14px;display:flex;align-items:center;gap:8px}
+.ig{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:14px}
+.ig6{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:12px}
+.f{display:flex;flex-direction:column;gap:4px}.f label{font-size:10px;font-weight:600;color:var(--tx2);text-transform:uppercase;letter-spacing:.3px}
+.f input,.f select{padding:7px 10px;border:1.5px solid var(--bdr);border-radius:var(--rs);background:var(--input);color:var(--tx);font-size:12px;font-family:'JetBrains Mono',monospace;font-weight:500}
+.f input:focus{outline:none;border-color:var(--ac);box-shadow:0 0 0 3px var(--acg)}.f .h{font-size:10px;color:var(--txm);font-family:Inter}
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:18px}.g3{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}.g4{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}
+.mb{margin-bottom:20px}.mt{margin-top:20px}
+.pc{background:var(--card);border-radius:var(--r);box-shadow:var(--sh);border:2px solid var(--bdrl);overflow:hidden;transition:var(--tr)}
+.pc:hover{border-color:var(--acg);box-shadow:var(--shl)}.ph{padding:16px 20px;color:#fff}.ph h3{font-family:Outfit;font-size:16px;font-weight:700;margin-bottom:2px}.ph .ps{font-size:11px;opacity:.8}
+.pb{padding:16px 20px}.ps2{display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid var(--bdrl);font-size:12px}.ps2:last-child{border-bottom:none}
+.ps2 .l{color:var(--tx2)}.ps2 .v{font-weight:600;font-family:'JetBrains Mono';font-size:12px}
+.p1 .ph{background:linear-gradient(135deg,#6c5ce7,#a29bfe)}.p2 .ph{background:linear-gradient(135deg,#00b894,#55efc4)}.p3 .ph{background:linear-gradient(135deg,#fd9644,#ffc048)}
+.ins{background:linear-gradient(135deg,rgba(108,92,231,.04),rgba(0,206,201,.04));border:1px solid rgba(108,92,231,.15);border-left:4px solid var(--ac);border-radius:var(--rs);padding:16px 20px;margin:16px 0}
+.ins h4{font-family:Outfit;color:var(--ac);font-size:13px;margin-bottom:5px;font-weight:600}.ins p{font-size:13px;color:var(--tx);line-height:1.7}
+.ins .a{font-weight:600;color:var(--ac)}.ins .g{color:var(--ok);font-weight:600}.ins .b{color:var(--no);font-weight:600}
+.tw{overflow-x:auto;border-radius:var(--rs);border:1px solid var(--bdr)}
+table{width:100%;border-collapse:collapse;font-size:12px}thead{background:var(--input);position:sticky;top:0;z-index:1}
+th{padding:10px 12px;text-align:right;font-family:Outfit;font-weight:600;font-size:10px;text-transform:uppercase;letter-spacing:.5px;color:var(--txm);border-bottom:2px solid var(--bdr);white-space:nowrap}
+th:first-child{text-align:left}th.gs{border-left:2px solid var(--bdr)}
+td{padding:8px 12px;text-align:right;border-bottom:1px solid var(--bdrl);font-family:'JetBrains Mono';font-size:11px;font-weight:500}
+td:first-child{text-align:left;font-family:Inter;font-weight:600}td.gs{border-left:2px solid var(--bdrl)}
+tr:hover{background:var(--acg)!important}.bc{color:var(--ok);font-weight:700!important}.wc{color:var(--no)}
+.cc{background:var(--card);border-radius:var(--r);padding:22px;box-shadow:var(--sh);border:1px solid var(--bdrl)}.cc h3{font-family:Outfit;font-size:14px;font-weight:600;margin-bottom:14px}
+.cb{position:relative;width:100%;height:300px}
+.sr{display:flex;gap:8px;align-items:center;margin-bottom:8px;flex-wrap:wrap}.sr label{font-size:11px;font-weight:500;color:var(--tx2);min-width:170px}
+.sr input[type=range]{flex:1;min-width:100px;-webkit-appearance:none;height:4px;border-radius:2px;background:var(--bdr);cursor:pointer}
+.sr input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:16px;height:16px;border-radius:50%;background:linear-gradient(135deg,var(--ac),var(--acl));border:2px solid var(--card);box-shadow:0 2px 6px rgba(108,92,231,.35);cursor:pointer}
+.sr .vd{font-family:'JetBrains Mono';font-size:12px;font-weight:600;min-width:45px;text-align:right;color:var(--ac)}
+.preset-btns{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:16px}
+.preset-btn{padding:6px 14px;border:1.5px solid var(--bdr);border-radius:var(--rs);background:var(--input);color:var(--tx);font-size:11px;font-weight:600;cursor:pointer;font-family:Inter;transition:var(--tr)}
+.preset-btn:hover{border-color:var(--ac);color:var(--ac)}.preset-btn.active{background:linear-gradient(135deg,var(--ac),var(--acl));color:#fff;border-color:transparent}
+.warn-box{background:var(--nol);color:var(--no);padding:8px 12px;border-radius:8px;font-size:11px;font-weight:600;margin:6px 0}
+.section-label{font-size:11px;font-weight:600;color:var(--txm);text-transform:uppercase;letter-spacing:.5px;margin:8px 0 4px}
+@media(max-width:1024px){.g2,.g3,.g4{grid-template-columns:1fr}}
+@media(max-width:768px){.hdr{padding:10px 16px;height:auto}.pnl{padding:14px}.ig,.ig6{grid-template-columns:1fr}.g2,.g3,.g4{grid-template-columns:1fr}.sub{display:none}}
+</style>
 </head>
 <body>
-
-<header class="header">
-  <div class="logo">
-    <div class="logo-icon">NC</div>
-    <div>
-      <h1>Nest<span class="hl">Craft</span></h1>
-      <div class="sub">Abhishek & Neha's Home Decision Lab</div>
-    </div>
-  </div>
-  <button class="theme-btn" onclick="toggleTheme()">Dark Mode</button>
-</header>
-
+<header class="hdr"><div class="logo"><div class="logo-i">NC</div><div><h1>Nest<span class="hl">Craft</span></h1><div class="sub">Abhishek & Neha's Home Decision Lab</div></div></div><button class="thm" onclick="toggleTheme()">Dark Mode</button></header>
 <nav class="tabs">
-  <button class="tab active" data-tab="decision">🏠 Your Decision</button>
-  <button class="tab" data-tab="yearly">📊 Year-by-Year Position</button>
-  <button class="tab" data-tab="whatif">🔮 What-If Explorer</button>
+<button class="tab active" data-tab="decision">🏠 Your Decision</button>
+<button class="tab" data-tab="yearly">📊 Year-by-Year</button>
+<button class="tab" data-tab="whatif">🔮 What-If Explorer</button>
 </nav>
 
-<!-- ============ TAB 1: YOUR DECISION ============ -->
-<div class="panel active" id="tab-decision">
+<!-- ========== TAB 1 ========== -->
+<div class="pnl active" id="tab-decision">
+<div class="ins mb"><h4>💡 The Real Question</h4><p>Three paths, different trade-offs on <span class="a">lifestyle, cash flow freedom, and long-term wealth</span>. The numbers factor in salary growth, bonuses, prepayments, interior costs, and stamp duty to show your <em>real</em> financial position year by year.</p></div>
 
-  <div class="insight mb">
-    <h4>💡 The Real Question</h4>
-    <p>You're choosing between three life paths — each with different trade-offs on <span class="callout">lifestyle, cash flow freedom, and long-term wealth</span>. The numbers below aren't just about which path makes you "richer" — they're about understanding <em>what you're trading</em> in each case. Let's break it down with real Goregaon East market data.</p>
-  </div>
+<div class="inp-card"><h3>💼 Income & Growth</h3>
+<div class="ig6">
+<div class="f"><label>Monthly Income (Combined)</label><input type="number" id="income" value="350000" step="10000"><span class="h">Abhishek + Neha take-home</span></div>
+<div class="f"><label>Salary Growth (% p.a.)</label><input type="number" id="salaryGrowth" value="8" step="1"><span class="h">Annual increment</span></div>
+<div class="f"><label>Year-End Bonus (months)</label><input type="number" id="bonusMonths" value="2" step="0.5"><span class="h">e.g. 2 = 2 months salary</span></div>
+<div class="f"><label>Monthly Expenses (excl. rent/EMI)</label><input type="number" id="expenses" value="80000" step="5000"><span class="h">Grows ~6% yearly with inflation</span></div>
+<div class="f"><label>Current Rent</label><input type="number" id="rent" value="50000" step="5000"></div>
+<div class="f"><label>Savings for Down Payment</label><input type="number" id="savings" value="20000000" step="500000"><span class="h">Liquid savings deployable</span></div>
+</div></div>
 
-  <div class="inputs-card">
-    <h3>⚙️ Your Numbers <span style="font-weight:400;font-size:12px;color:var(--text-muted)">(adjust to match your situation)</span></h3>
-    <div class="inputs-grid">
-      <div class="inp-group">
-        <label>Combined Monthly Income</label>
-        <input type="number" id="income" value="350000" step="10000">
-        <span class="hint">Abhishek + Neha take-home</span>
-      </div>
-      <div class="inp-group">
-        <label>Monthly Expenses (excl. rent/EMI)</label>
-        <input type="number" id="expenses" value="80000" step="5000">
-        <span class="hint">Groceries, utilities, travel, leisure</span>
-      </div>
-      <div class="inp-group">
-        <label>Current Rent</label>
-        <input type="number" id="rent" value="50000" step="5000">
-      </div>
-      <div class="inp-group">
-        <label>Savings Available for Down Payment</label>
-        <input type="number" id="savings" value="20000000" step="500000">
-        <span class="hint">Liquid savings you can deploy</span>
-      </div>
-      <div class="inp-group">
-        <label>Home Loan Interest Rate (%)</label>
-        <input type="number" id="loanRate" value="8.5" step="0.1">
-      </div>
-      <div class="inp-group">
-        <label>Loan Tenure (Years)</label>
-        <input type="number" id="tenure" value="20" min="5" max="30">
-      </div>
-      <div class="inp-group">
-        <label>Expected Investment Return (%)</label>
-        <input type="number" id="investReturn" value="13" step="0.5">
-        <span class="hint">Blended MF + equity returns</span>
-      </div>
-      <div class="inp-group">
-        <label>Esquire Price (₹)</label>
-        <input type="number" id="esquirePrice" value="71000000" step="1000000">
-        <span class="hint">52k/sqft × 1365 sqft carpet</span>
-      </div>
-      <div class="inp-group">
-        <label>Sherwood Price (₹)</label>
-        <input type="number" id="sherwoodPrice" value="34500000" step="500000">
-        <span class="hint">30k/sqft × 1150 sqft carpet</span>
-      </div>
-      <div class="inp-group">
-        <label>Esquire Appreciation (% p.a.)</label>
-        <input type="number" id="esquireAppreciation" value="4" step="0.5">
-        <span class="hint">10yr Goregaon CAGR ~2.4%, Esquire ~5%</span>
-      </div>
-      <div class="inp-group">
-        <label>Sherwood Appreciation (% p.a.)</label>
-        <input type="number" id="sherwoodAppreciation" value="3" step="0.5">
-        <span class="hint">Older society, moderate growth</span>
-      </div>
-      <div class="inp-group">
-        <label>Monthly Maintenance</label>
-        <input type="number" id="maintenance" value="12000" step="1000">
-      </div>
-    </div>
-  </div>
+<div class="inp-card"><h3>🏢 Property Details</h3>
+<div class="ig6">
+<div class="f"><label>Esquire Price (₹)</label><input type="number" id="esquirePrice" value="71000000" step="1000000"><span class="h">52k/sqft x 1365 sqft</span></div>
+<div class="f"><label>Sherwood Price (₹)</label><input type="number" id="sherwoodPrice" value="34500000" step="500000"><span class="h">30k/sqft x 1150 sqft</span></div>
+<div class="f"><label>Esquire Appreciation (%)</label><input type="number" id="eqApp" value="4" step="0.5"><span class="h">10yr CAGR ~2.4-5%</span></div>
+<div class="f"><label>Sherwood Appreciation (%)</label><input type="number" id="swApp" value="3" step="0.5"><span class="h">Older society, moderate</span></div>
+<div class="f"><label>Esquire Maintenance (/mo)</label><input type="number" id="eqMaint" value="20000" step="1000"></div>
+<div class="f"><label>Sherwood Maintenance (/mo)</label><input type="number" id="swMaint" value="10000" step="1000"></div>
+<div class="f"><label>Esquire Interior (₹)</label><input type="number" id="eqInterior" value="6000000" step="500000"><span class="h">One-time setup cost</span></div>
+<div class="f"><label>Sherwood Interior (₹)</label><input type="number" id="swInterior" value="4000000" step="500000"></div>
+</div></div>
 
-  <!-- THE THREE PATHS -->
-  <div class="grid-3 mb" id="pathCards">
-    <!-- Generated by JS -->
-  </div>
+<div class="inp-card"><h3>🏦 Loan & Prepayment</h3>
+<div class="ig6">
+<div class="f"><label>Interest Rate (%)</label><input type="number" id="loanRate" value="8.5" step="0.1"></div>
+<div class="f"><label>Loan Tenure (Years)</label><input type="number" id="tenure" value="20" min="5" max="30"></div>
+<div class="f"><label>Investment Return (%)</label><input type="number" id="investReturn" value="13" step="0.5"><span class="h">Blended MF + equity</span></div>
+<div class="f"><label>Monthly Prepayment (₹)</label><input type="number" id="monthlyPrepay" value="0" step="5000"><span class="h">Extra over EMI each month</span></div>
+<div class="f"><label>Annual Bonus → Prepay (%)</label><input type="number" id="bonusPrepayPct" value="50" step="10"><span class="h">% of bonus used for loan prepay</span></div>
+<div class="f"><label>Stamp Duty + Reg (%)</label><input type="number" id="stampDuty" value="7" step="0.5"><span class="h">Mumbai: ~6% stamp + 1% reg</span></div>
+</div></div>
 
-  <div class="insight" id="decisionInsight">
-    <!-- Generated by JS -->
-  </div>
-
-  <div class="grid-2 mt mb">
-    <div class="chart-card">
-      <h3>📈 Net Worth Trajectory (8 Years)</h3>
-      <div class="chart-box"><canvas id="chartNetWorth"></canvas></div>
-    </div>
-    <div class="chart-card">
-      <h3>💰 Monthly Cash Freedom</h3>
-      <div class="chart-box"><canvas id="chartCashFlow"></canvas></div>
-    </div>
-  </div>
-
-  <div class="insight">
-    <h4>🏗️ Property Market Context — Goregaon East</h4>
-    <p>Based on market research: <strong>Oberoi Esquire</strong> has seen ~5% CAGR over 10 years (outperforming the area). But the broader Goregaon East 10-year CAGR is only <span class="bad">~2.4%</span>. Recent momentum (2022-25) has been stronger at 5-7%, partly driven by metro connectivity. <strong>Raheja Sherwood</strong> is an older society (~2013 possession) with more modest appreciation tracking closer to area averages.<br><br>
-    Meanwhile, a diversified equity/MF portfolio has historically delivered <span class="good">12-15% CAGR</span> over similar periods. This is the core tension in your decision: <em>property gives you a home, but financial assets grow faster.</em></p>
-  </div>
+<div class="g3 mb" id="pathCards"></div>
+<div class="ins" id="decisionInsight"></div>
+<div class="g2 mt mb">
+<div class="cc"><h3>📈 Net Worth Trajectory</h3><div class="cb"><canvas id="chartNW"></canvas></div></div>
+<div class="cc"><h3>💰 Monthly Surplus (After EMI/Rent)</h3><div class="cb"><canvas id="chartCF"></canvas></div></div>
+</div>
+<div class="ins"><h4>🏗️ Goregaon East Market Context</h4><p><strong>Oberoi Esquire:</strong> ~5% CAGR over 10 years, outperforming the area avg of <span class="b">~2.4%</span>. Recent 3yr momentum stronger at 5-7%.<br><strong>Raheja Sherwood:</strong> Older society (~2013), tracking closer to area averages. <br><br>Meanwhile, diversified equity/MF portfolios have historically delivered <span class="g">12-15% CAGR</span>. The core tension: <em>property gives you a home, financial assets grow faster.</em></p></div>
 </div>
 
-<!-- ============ TAB 2: YEAR-BY-YEAR ============ -->
-<div class="panel" id="tab-yearly">
-  <div class="insight mb">
-    <h4>📋 How to Read This Table</h4>
-    <p>For each year-end, see exactly where you stand financially across all three paths. <span class="callout">Net Worth = Property Equity + Investment Portfolio</span>. Monthly surplus is what's left after EMI/rent + expenses — this is what gets invested. The winner isn't just about highest net worth — look at <em>monthly surplus</em> to understand your lifestyle freedom.</p>
-  </div>
-
-  <div class="card mb">
-    <h3 style="font-family:Outfit;font-size:16px;font-weight:600;margin-bottom:16px;">Year-End Financial Position — All Three Paths</h3>
-    <div class="table-wrap" id="yearlyTable" style="max-height: 600px; overflow-y: auto;">
-      <!-- Generated by JS -->
-    </div>
-  </div>
-
-  <div class="grid-3 mb" id="yearEndSummary">
-    <!-- Generated by JS -->
-  </div>
-
-  <div class="insight" id="yearlyInsight">
-    <!-- Generated by JS -->
-  </div>
+<!-- ========== TAB 2 ========== -->
+<div class="pnl" id="tab-yearly">
+<div class="ins mb"><h4>📋 How to Read This</h4><p><span class="a">Net Worth = Property Equity + Investment Portfolio</span>. Monthly surplus is what's left after EMI/rent + expenses — this gets invested. Salary grows yearly, expenses inflate, bonuses fund prepayments. Watch <em>EMI as % of income</em> shrink over time with salary growth.</p></div>
+<div class="card mb">
+<h3 style="font-family:Outfit;font-size:15px;font-weight:600;margin-bottom:14px">Year-End Financial Position — All Three Paths</h3>
+<div class="tw" id="yearlyTable" style="max-height:650px;overflow-y:auto"></div>
+</div>
+<div class="g3 mb" id="yearSummary"></div>
+<div class="ins" id="yearlyInsight"></div>
 </div>
 
-<!-- ============ TAB 3: WHAT-IF ============ -->
-<div class="panel" id="tab-whatif">
-  <div class="insight mb">
-    <h4>🔮 Stress-Test Your Decision</h4>
-    <p>The biggest risk in buying is <span class="bad">property not appreciating as expected</span> while you're locked into EMIs. The biggest risk in waiting is <span class="bad">prices running away</span>. Use the sliders below to see how sensitive your decision is to these assumptions.</p>
-  </div>
+<!-- ========== TAB 3 ========== -->
+<div class="pnl" id="tab-whatif">
+<div class="ins mb"><h4>🔮 Stress-Test Your Decision</h4><p>Biggest risk buying: <span class="b">property doesn't appreciate</span> while you're locked into EMIs. Biggest risk waiting: <span class="b">prices run away</span>. Use presets or sliders to explore.</p></div>
 
-  <div class="inputs-card">
-    <h3>🎛️ Adjust Assumptions</h3>
-    <div class="sensitivity-row">
-      <label>Esquire Appreciation:</label>
-      <input type="range" id="wiEsquire" min="0" max="10" step="0.5" value="4">
-      <span class="val-display" id="wiEsquireVal">4%</span>
-    </div>
-    <div class="sensitivity-row">
-      <label>Sherwood Appreciation:</label>
-      <input type="range" id="wiSherwood" min="0" max="10" step="0.5" value="3">
-      <span class="val-display" id="wiSherwoodVal">3%</span>
-    </div>
-    <div class="sensitivity-row">
-      <label>Investment Returns (MF+Equity):</label>
-      <input type="range" id="wiInvest" min="8" max="20" step="0.5" value="13">
-      <span class="val-display" id="wiInvestVal">13%</span>
-    </div>
-    <div class="sensitivity-row">
-      <label>Rent Escalation (% p.a.):</label>
-      <input type="range" id="wiRentEsc" min="0" max="10" step="0.5" value="5">
-      <span class="val-display" id="wiRentEscVal">5%</span>
-    </div>
-    <div class="sensitivity-row">
-      <label>Analysis Period (Years):</label>
-      <input type="range" id="wiYears" min="5" max="15" step="1" value="8">
-      <span class="val-display" id="wiYearsVal">8</span>
-    </div>
-  </div>
+<div class="inp-card">
+<h3>🎯 Quick Presets</h3>
+<div class="preset-btns" id="presetBtns">
+<button class="preset-btn" onclick="applyPreset('base')">📊 Base Case</button>
+<button class="preset-btn" onclick="applyPreset('reBull')">🏠 RE Bull (8%/yr)</button>
+<button class="preset-btn" onclick="applyPreset('reBear')">🏚️ RE Bear (1%/yr)</button>
+<button class="preset-btn" onclick="applyPreset('eqBull')">📈 Equity Bull (18%)</button>
+<button class="preset-btn" onclick="applyPreset('eqBear')">📉 Equity Bear (8%)</button>
+<button class="preset-btn" onclick="applyPreset('nightmare')">😰 Worst Case</button>
+<button class="preset-btn" onclick="applyPreset('dream')">🌟 Best Case</button>
+</div>
+<div class="sr"><label>Esquire Appreciation:</label><input type="range" id="wiEq" min="0" max="10" step="0.5" value="4"><span class="vd" id="wiEqV">4%</span></div>
+<div class="sr"><label>Sherwood Appreciation:</label><input type="range" id="wiSw" min="0" max="10" step="0.5" value="3"><span class="vd" id="wiSwV">3%</span></div>
+<div class="sr"><label>Investment Returns:</label><input type="range" id="wiInv" min="6" max="22" step="0.5" value="13"><span class="vd" id="wiInvV">13%</span></div>
+<div class="sr"><label>Rent Escalation:</label><input type="range" id="wiRE" min="0" max="10" step="0.5" value="5"><span class="vd" id="wiREV">5%</span></div>
+<div class="sr"><label>Analysis Period:</label><input type="range" id="wiYr" min="5" max="20" step="1" value="10"><span class="vd" id="wiYrV">10</span></div>
+</div>
 
-  <div class="grid-2 mb">
-    <div class="chart-card">
-      <h3>Net Worth Comparison</h3>
-      <div class="chart-box"><canvas id="chartWhatIfNW"></canvas></div>
-    </div>
-    <div class="chart-card">
-      <h3>Cumulative Investment Portfolio</h3>
-      <div class="chart-box"><canvas id="chartWhatIfInv"></canvas></div>
-    </div>
-  </div>
+<div class="g2 mb">
+<div class="cc"><h3>Net Worth (Stacked: Property + Investments)</h3><div class="cb"><canvas id="chartWINW"></canvas></div></div>
+<div class="cc"><h3>Investment Portfolio Growth</h3><div class="cb"><canvas id="chartWIInv"></canvas></div></div>
+</div>
+<div class="card mb"><h3 style="font-family:Outfit;font-size:15px;font-weight:600;margin-bottom:14px">Scenario Comparison</h3><div class="tw" id="wiTable"></div></div>
+<div class="ins" id="wiInsight"></div>
 
-  <div class="card mb">
-    <h3 style="font-family:Outfit;font-size:16px;font-weight:600;margin-bottom:16px;">Scenario Summary at Year End</h3>
-    <div class="table-wrap" id="whatIfTable"></div>
-  </div>
-
-  <div class="insight" id="whatIfInsight">
-    <!-- Generated by JS -->
-  </div>
-
-  <div class="card mt">
-    <h3 style="font-family:Outfit;font-size:16px;font-weight:600;margin-bottom:12px;">🧠 The Bigger Picture</h3>
-    <p style="font-size:14px;line-height:1.8;color:var(--text-secondary)">
-      <strong>What the numbers can't capture:</strong><br>
-      • <strong>Esquire</strong> = premium lifestyle upgrade — better society, amenities, newer construction, social circle. This has real value beyond ₹.<br>
-      • <strong>Sherwood</strong> = financial breathing room — more vacations, more SIPs, less EMI stress. But it's an older society and you may feel the "itch to upgrade" in 3-5 years.<br>
-      • <strong>Rent → Buy Later</strong> = maximum flexibility today, but you're betting that Esquire prices won't run away AND that you'll maintain discipline to invest the surplus.<br><br>
-      <strong>The honest question:</strong> If Sherwood + heavy investing gives you ₹X more in 8 years, is that ₹X worth more to you than living in Esquire for those 8 years? Only you and Neha can answer that.
-    </p>
-  </div>
+<div class="card mt"><h3 style="font-family:Outfit;font-size:15px;font-weight:600;margin-bottom:10px">🧠 What the Numbers Can't Capture</h3>
+<p style="font-size:13px;line-height:1.8;color:var(--tx2)">
+<strong>Esquire</strong> = premium lifestyle — better society, amenities, social circle. Real value beyond ₹.<br>
+<strong>Sherwood</strong> = breathing room — more SIPs, vacations, less EMI stress. Older society, possible "itch to upgrade" later.<br>
+<strong>Rent→Buy</strong> = max flexibility now, betting Esquire prices won't rocket AND you'll invest the surplus.<br><br>
+<strong>Other factors:</strong> Sherwood rental yield if you upgrade (~2-3%), emergency fund post-DP, expense inflation (~6-7%/yr).
+</p></div>
 </div>
 
 <script>
-// ===== FORMATTERS =====
-function fmt(n) {
-  if (n == null || isNaN(n)) return '₹0';
-  const neg = n < 0; n = Math.abs(Math.round(n));
-  const s = n.toString(); let r = '';
-  if (s.length <= 3) r = s;
-  else { r = s.substring(s.length - 3); let rem = s.substring(0, s.length - 3); while (rem.length > 2) { r = rem.substring(rem.length - 2) + ',' + r; rem = rem.substring(0, rem.length - 2); } if (rem.length > 0) r = rem + ',' + r; }
-  return (neg ? '-₹' : '₹') + r;
-}
+// === FORMATTERS ===
+function fmt(n){if(n==null||isNaN(n))return'₹0';const neg=n<0;n=Math.abs(Math.round(n));const s=n.toString();let r='';if(s.length<=3)r=s;else{r=s.substring(s.length-3);let m=s.substring(0,s.length-3);while(m.length>2){r=m.substring(m.length-2)+','+r;m=m.substring(0,m.length-2)}if(m.length>0)r=m+','+r}return(neg?'-₹':'₹')+r}
+function fCr(n){if(n==null||isNaN(n))return'₹0';const c=n/1e7;if(Math.abs(c)>=1)return'₹'+c.toFixed(2)+' Cr';return'₹'+(n/1e5).toFixed(1)+'L'}
+function fL(n){return'₹'+(n/1e5).toFixed(1)+'L'}
+function sm(n){if(n==null||isNaN(n))return'₹0';const a=Math.abs(n);if(a>=1e7)return fCr(n);if(a>=1e5)return fL(n);return fmt(n)}
 
-function fmtCr(n) {
-  if (n == null || isNaN(n)) return '₹0';
-  const cr = n / 10000000;
-  if (Math.abs(cr) >= 1) return '₹' + cr.toFixed(2) + ' Cr';
-  return '₹' + (n / 100000).toFixed(2) + ' L';
-}
+// === EMI ===
+function emi(p,r,n){if(p<=0||n<=0)return 0;if(r<=0)return p/n;const mr=r/100/12;return p*mr*Math.pow(1+mr,n)/(Math.pow(1+mr,n)-1)}
 
-function fmtL(n) { return '₹' + (n / 100000).toFixed(1) + 'L'; }
+// === GET INPUTS ===
+function inp(){return{
+  income:+document.getElementById('income').value,
+  salaryGrowth:+document.getElementById('salaryGrowth').value,
+  bonusMonths:+document.getElementById('bonusMonths').value,
+  expenses:+document.getElementById('expenses').value,
+  rent:+document.getElementById('rent').value,
+  savings:+document.getElementById('savings').value,
+  esquirePrice:+document.getElementById('esquirePrice').value,
+  sherwoodPrice:+document.getElementById('sherwoodPrice').value,
+  eqApp:+document.getElementById('eqApp').value,
+  swApp:+document.getElementById('swApp').value,
+  eqMaint:+document.getElementById('eqMaint').value,
+  swMaint:+document.getElementById('swMaint').value,
+  eqInterior:+document.getElementById('eqInterior').value,
+  swInterior:+document.getElementById('swInterior').value,
+  loanRate:+document.getElementById('loanRate').value,
+  tenure:+document.getElementById('tenure').value,
+  investReturn:+document.getElementById('investReturn').value,
+  monthlyPrepay:+document.getElementById('monthlyPrepay').value,
+  bonusPrepayPct:+document.getElementById('bonusPrepayPct').value,
+  stampDuty:+document.getElementById('stampDuty').value,
+}}
 
-function smart(n) {
-  if (n == null || isNaN(n)) return '₹0';
-  const a = Math.abs(n);
-  if (a >= 10000000) return fmtCr(n);
-  if (a >= 100000) return fmtL(n);
-  return fmt(n);
-}
+// === CORE CALC ===
+function calc(ov={}){
+  const I={...inp(),...ov};
+  const sdRate=I.stampDuty/100;
+  const rentEsc=ov.rentEsc||5;
+  const years=ov.years||10;
+  const mIR=I.investReturn/100/12;
+  const expInflation=0.06; // 6% expense inflation
+  const paths=[];
 
-// ===== EMI CALC =====
-function calcEMI(p, r, n) {
-  if (p <= 0 || n <= 0) return 0;
-  if (r <= 0) return p / n;
-  const mr = r / 100 / 12;
-  return p * mr * Math.pow(1 + mr, n) / (Math.pow(1 + mr, n) - 1);
-}
+  function simulatePath(name,emoji,color,desc,opts){
+    const{price,appRate,maint,interior,isBuy,buyYear}=opts;
+    const yearData=[];
+    let portfolio=I.savings;
+    let loanBal=0,monthlyEMI=0,bought=false;
+    const mLR=I.loanRate/100/12;
+    let purchasePrice=0;
 
-// ===== GET INPUTS =====
-function getInputs() {
-  return {
-    income: +document.getElementById('income').value,
-    expenses: +document.getElementById('expenses').value,
-    rent: +document.getElementById('rent').value,
-    savings: +document.getElementById('savings').value,
-    loanRate: +document.getElementById('loanRate').value,
-    tenure: +document.getElementById('tenure').value,
-    investReturn: +document.getElementById('investReturn').value,
-    esquirePrice: +document.getElementById('esquirePrice').value,
-    sherwoodPrice: +document.getElementById('sherwoodPrice').value,
-    esquireAppreciation: +document.getElementById('esquireAppreciation').value,
-    sherwoodAppreciation: +document.getElementById('sherwoodAppreciation').value,
-    maintenance: +document.getElementById('maintenance').value,
-  };
-}
+    for(let y=1;y<=years;y++){
+      const yearIncome=I.income*Math.pow(1+I.salaryGrowth/100,y-1);
+      const yearExpenses=I.expenses*Math.pow(1+expInflation,y-1);
+      const annualBonus=yearIncome*I.bonusMonths;
 
-// ===== CORE CALCULATION =====
-function calculate(overrides = {}) {
-  const I = { ...getInputs(), ...overrides };
-  const stampDutyRate = 0.07; // 6% stamp + 1% reg
-  const rentEsc = overrides.rentEsc || 5;
-  const years = overrides.years || 8;
-  const monthlyInvR = I.investReturn / 100 / 12;
-
-  const paths = [];
-
-  // PATH 1: Buy Esquire Now
-  {
-    const price = I.esquirePrice;
-    const stampDuty = price * stampDutyRate;
-    const dp = Math.min(I.savings, price * 0.80); // up to 80% DP
-    const loan = price - dp;
-    const emi = calcEMI(loan, I.loanRate, I.tenure * 12);
-    const monthlyOut = emi + I.maintenance;
-    const surplus = I.income - I.expenses - monthlyOut;
-
-    let portfolio = Math.max(0, I.savings - dp - stampDuty);
-    let loanBal = loan;
-    const monthlyLoanR = I.loanRate / 100 / 12;
-    const yearData = [];
-
-    for (let y = 1; y <= years; y++) {
-      for (let m = 0; m < 12; m++) {
-        const interest = loanBal * monthlyLoanR;
-        const principal = Math.min(emi - interest, loanBal);
-        loanBal = Math.max(0, loanBal - principal);
-        if (surplus >= 0) {
-          portfolio = portfolio * (1 + monthlyInvR) + surplus;
-        } else {
-          portfolio = Math.max(0, portfolio * (1 + monthlyInvR) + surplus); // dipping into savings
-        }
+      // Buy event
+      if(isBuy&&!bought&&y===(buyYear||1)){
+        purchasePrice=price*Math.pow(1+appRate/100,(buyYear||1)-1);
+        const stamp=purchasePrice*sdRate;
+        const dp=Math.min(portfolio,purchasePrice*0.8);
+        loanBal=purchasePrice-dp;
+        monthlyEMI=emi(loanBal,I.loanRate,I.tenure*12);
+        portfolio=Math.max(0,portfolio-dp-stamp-interior);
+        bought=true;
       }
-      const propVal = price * Math.pow(1 + I.esquireAppreciation / 100, y);
-      const equity = propVal - loanBal;
-      yearData.push({ year: y, propVal, loanBal, equity, portfolio, netWorth: equity + portfolio, surplus, emi, monthlyOut });
+
+      let monthlySurplus=0,annualPrepay=0,totalPrepaidThisYear=0;
+
+      for(let m=0;m<12;m++){
+        if(bought&&loanBal>0){
+          const interest=loanBal*mLR;
+          const principal=Math.min(monthlyEMI-interest,loanBal);
+          loanBal=Math.max(0,loanBal-principal);
+          // Monthly prepayment
+          if(I.monthlyPrepay>0&&loanBal>0){
+            const pp=Math.min(I.monthlyPrepay,loanBal);
+            loanBal-=pp;totalPrepaidThisYear+=pp;
+          }
+          const rent4m=0;
+          const maint4m=bought?maint:0;
+          monthlySurplus=yearIncome-yearExpenses-monthlyEMI-maint4m-I.monthlyPrepay;
+        }else if(!bought){
+          const currentRent=I.rent*Math.pow(1+rentEsc/100,y-1);
+          monthlySurplus=yearIncome-yearExpenses-currentRent;
+        }else{
+          // loan paid off
+          monthlySurplus=yearIncome-yearExpenses-maint;
+        }
+        if(monthlySurplus>=0)portfolio=portfolio*(1+mIR)+monthlySurplus;
+        else portfolio=Math.max(0,portfolio*(1+mIR)+monthlySurplus);
+      }
+
+      // Annual bonus prepayment
+      if(bought&&loanBal>0&&I.bonusPrepayPct>0){
+        annualPrepay=Math.min(annualBonus*I.bonusPrepayPct/100,loanBal);
+        loanBal-=annualPrepay;totalPrepaidThisYear+=annualPrepay;
+      }
+      // Remaining bonus goes to investments
+      const bonusToInvest=annualBonus-annualPrepay;
+      if(bonusToInvest>0)portfolio+=bonusToInvest;
+
+      const propVal=bought?purchasePrice*Math.pow(1+appRate/100,y-(buyYear||1)):0;
+      const equity=propVal-loanBal;
+      const emiPctIncome=bought&&monthlyEMI>0?(monthlyEMI/yearIncome*100):0;
+
+      yearData.push({year:y,income:yearIncome,expenses:yearExpenses,propVal,loanBal,equity,portfolio,
+        netWorth:equity+portfolio,surplus:monthlySurplus,emi:bought?monthlyEMI:0,
+        maint:bought?maint:0,prepaid:totalPrepaidThisYear,bonus:annualBonus,
+        bonusToInvest,emiPct:emiPctIncome,rent:!bought?(I.rent*Math.pow(1+rentEsc/100,y-1)):0,
+        loanPaidOff:bought&&loanBal<=0});
     }
 
-    paths.push({ name: 'Buy Esquire Now', emoji: '🏢', color: '#6c5ce7',
-      price, dp, loan, emi, stampDuty, monthlyOut, surplus, yearData,
-      description: '52k/sqft • 1365 sqft • Premium Oberoi lifestyle' });
-  }
+    const firstYear=yearData[0]||{};
+    const initialSurplus=bought&&(buyYear||1)===1?firstYear.surplus:(I.income-I.expenses-I.rent);
 
-  // PATH 2: Buy Sherwood Now + Invest Heavily
-  {
-    const price = I.sherwoodPrice;
-    const stampDuty = price * stampDutyRate;
-    const dp = Math.min(I.savings, price * 0.25);
-    const loan = price - dp;
-    const emi = calcEMI(loan, I.loanRate, I.tenure * 12);
-    const monthlyOut = emi + I.maintenance * 0.7; // lower maintenance for older society
-    const surplus = I.income - I.expenses - monthlyOut;
-
-    let portfolio = Math.max(0, I.savings - dp - stampDuty);
-    let loanBal = loan;
-    const monthlyLoanR = I.loanRate / 100 / 12;
-    const yearData = [];
-
-    for (let y = 1; y <= years; y++) {
-      for (let m = 0; m < 12; m++) {
-        const interest = loanBal * monthlyLoanR;
-        const principal = Math.min(emi - interest, loanBal);
-        loanBal = Math.max(0, loanBal - principal);
-        if (surplus >= 0) {
-          portfolio = portfolio * (1 + monthlyInvR) + surplus;
-        } else {
-          portfolio = Math.max(0, portfolio * (1 + monthlyInvR) + surplus);
-        }
-      }
-      const propVal = price * Math.pow(1 + I.sherwoodAppreciation / 100, y);
-      const equity = propVal - loanBal;
-      yearData.push({ year: y, propVal, loanBal, equity, portfolio, netWorth: equity + portfolio, surplus, emi, monthlyOut });
-    }
-
-    paths.push({ name: 'Buy Sherwood Now', emoji: '🏠', color: '#00b894',
-      price, dp, loan, emi, stampDuty, monthlyOut, surplus, yearData,
-      description: '30k/sqft • 1150 sqft • Lower EMI, invest the difference' });
-  }
-
-  // PATH 3: Rent 2 More Years, Then Buy Esquire
-  {
-    const buyYear = 2;
-    let portfolio = I.savings;
-    const yearData = [];
-    let currentRent = I.rent;
-    let emi = 0, monthlyOut = 0, loanBal = 0, purchasePrice = 0, surplus = 0;
-    let bought = false;
-    const monthlyLoanR = I.loanRate / 100 / 12;
-
-    for (let y = 1; y <= years; y++) {
-      if (y === buyYear + 1 && !bought) {
-        purchasePrice = I.esquirePrice * Math.pow(1 + I.esquireAppreciation / 100, buyYear);
-        const stampDuty = purchasePrice * stampDutyRate;
-        const dp = Math.min(portfolio, purchasePrice * 0.25);
-        loanBal = purchasePrice - dp;
-        emi = calcEMI(loanBal, I.loanRate, I.tenure * 12);
-        portfolio = Math.max(0, portfolio - dp - stampDuty);
-        bought = true;
-      }
-
-      if (!bought) {
-        currentRent = I.rent * Math.pow(1 + rentEsc / 100, y - 1);
-        monthlyOut = currentRent;
-        surplus = I.income - I.expenses - monthlyOut;
-      } else {
-        monthlyOut = emi + I.maintenance;
-        surplus = I.income - I.expenses - monthlyOut;
-      }
-
-      for (let m = 0; m < 12; m++) {
-        if (bought) {
-          const interest = loanBal * monthlyLoanR;
-          const principal = Math.min(emi - interest, loanBal);
-          loanBal = Math.max(0, loanBal - principal);
-        }
-        portfolio = portfolio * (1 + monthlyInvR) + Math.max(0, surplus);
-      }
-
-      let propVal = 0, equity = 0;
-      if (bought) {
-        propVal = purchasePrice * Math.pow(1 + I.esquireAppreciation / 100, y - buyYear);
-        equity = propVal - loanBal;
-      }
-      yearData.push({ year: y, propVal, loanBal, equity, portfolio, netWorth: equity + portfolio, surplus, emi, monthlyOut, rent: !bought ? currentRent : 0 });
-    }
-
-    // Find the post-purchase state for card display
-    const postBuyData = yearData.find(d => d.emi > 0);
-    const purchasePriceDisplay = I.esquirePrice * Math.pow(1 + I.esquireAppreciation / 100, buyYear);
-    const preBuySurplus = I.income - I.expenses - I.rent;
-
-    paths.push({ name: 'Rent 2Y → Buy Esquire', emoji: '⏳', color: '#fd9644',
-      price: purchasePriceDisplay,
-      dp: postBuyData ? purchasePriceDisplay - (postBuyData.loanBal || 0) : 0,
-      loan: postBuyData ? postBuyData.loanBal || 0 : 0,
-      emi: postBuyData ? postBuyData.emi : 0,
-      stampDuty: purchasePriceDisplay * stampDutyRate,
-      monthlyOut: I.rent,
-      surplus: preBuySurplus,
-      yearData,
-      description: `Rent for 2 yrs (₹${(I.rent/1000).toFixed(0)}K/mo), save & invest, then buy Esquire at Year 3 price`,
-      isRentFirst: true,
-      postBuyEMI: postBuyData ? postBuyData.emi : 0,
-      postBuySurplus: postBuyData ? postBuyData.surplus : 0,
+    paths.push({name,emoji,color,desc,yearData,
+      price:purchasePrice||price,
+      emi:yearData.find(d=>d.emi>0)?.emi||0,
+      surplus:initialSurplus,
+      isBuy,buyYear:buyYear||1,
     });
   }
 
-  return { paths, years };
+  // PATH 1: Esquire
+  simulatePath('Buy Esquire Now','🏢','#6c5ce7','52k/sqft • 1365 sqft • Premium Oberoi',{price:I.esquirePrice,appRate:I.eqApp,maint:I.eqMaint,interior:I.eqInterior,isBuy:true,buyYear:1});
+
+  // PATH 2: Sherwood
+  simulatePath('Buy Sherwood Now','🏠','#00b894','30k/sqft • 1150 sqft • Lower EMI, invest more',{price:I.sherwoodPrice,appRate:I.swApp,maint:I.swMaint,interior:I.swInterior,isBuy:true,buyYear:1});
+
+  // PATH 3: Rent 2Y → Esquire
+  simulatePath('Rent 2Y → Esquire','⏳','#fd9644','Save 2 years, then buy Esquire',{price:I.esquirePrice,appRate:I.eqApp,maint:I.eqMaint,interior:I.eqInterior,isBuy:true,buyYear:3});
+
+  return{paths,years};
 }
 
-// ===== CHART INSTANCES =====
-const charts = {};
+// === CHARTS ===
+const charts={};
+function dc(id){if(charts[id]){charts[id].destroy();delete charts[id]}}
 
-function destroyChart(id) {
-  if (charts[id]) { charts[id].destroy(); delete charts[id]; }
-}
+// === RENDER DECISION ===
+function renderDecision(){
+  const{paths,years}=calc();
+  const c=document.getElementById('pathCards');
+  c.innerHTML=paths.map((p,i)=>{
+    const cls=['p1','p2','p3'][i];
+    const last=p.yearData[years-1];
+    const first=p.yearData[0];
+    const isTight=first.surplus<0;
+    const isRentFirst=p.buyYear>1;
 
-// ===== RENDER DECISION TAB =====
-function renderDecision() {
-  const { paths, years } = calculate();
+    let body='';
+    if(isRentFirst){
+      const postBuy=p.yearData.find(d=>d.emi>0);
+      body=`<div class="section-label">Phase 1: Rent (Yr 1-2)</div>
+        <div class="ps2"><span class="l">Monthly Rent</span><span class="v">${fmt(first.rent)}</span></div>
+        <div class="ps2"><span class="l">Surplus to Invest</span><span class="v" style="color:var(--ok)">${fmt(first.surplus)}</span></div>
+        <div class="section-label">Phase 2: Buy Esquire (Yr 3+)</div>
+        <div class="ps2"><span class="l">Esquire Price (Yr 3)</span><span class="v">${fCr(p.price)}</span></div>
+        <div class="ps2"><span class="l">EMI After Purchase</span><span class="v">${fmt(postBuy?.emi||0)}</span></div>
+        <div class="ps2"><span class="l">EMI as % Income (Yr 3)</span><span class="v">${(postBuy?.emiPct||0).toFixed(0)}%</span></div>`;
+    }else{
+      body=`<div class="ps2"><span class="l">Property Cost</span><span class="v">${fCr(p.price)}</span></div>
+        <div class="ps2"><span class="l">Monthly EMI</span><span class="v">${fmt(p.emi)}</span></div>
+        <div class="ps2"><span class="l">EMI as % Income</span><span class="v" style="color:${first.emiPct>50?'var(--no)':first.emiPct>40?'var(--warn)':'var(--ok)'}">${first.emiPct.toFixed(0)}%</span></div>
+        <div class="ps2"><span class="l">Monthly Surplus</span><span class="v" style="color:${first.surplus>0?'var(--ok)':'var(--no)'}">${fmt(first.surplus)}</span></div>
+        ${isTight?'<div class="warn-box">⚠️ Tight — EMI exceeds comfortable limits</div>':''}`;
+    }
 
-  // Path Cards
-  const container = document.getElementById('pathCards');
-  container.innerHTML = paths.map((p, i) => {
-    const cls = ['path-1', 'path-2', 'path-3'][i];
-    const lastYear = p.yearData[p.yearData.length - 1];
-    return `<div class="path-card ${cls}">
-      <div class="path-header">
-        <h3>${p.emoji} ${p.name}</h3>
-        <div class="path-sub">${p.description}</div>
-      </div>
-      <div class="path-body">
-        ${p.isRentFirst ? `
-        <div style="font-size:12px;font-weight:600;color:var(--text-muted);margin-bottom:6px">PHASE 1: RENT (Years 1-2)</div>
-        <div class="path-stat"><span class="lbl">Monthly Rent</span><span class="val">${fmt(p.monthlyOut)}</span></div>
-        <div class="path-stat"><span class="lbl">Surplus to Invest</span><span class="val" style="color:var(--success)">${fmt(p.surplus)}</span></div>
-        <div style="font-size:12px;font-weight:600;color:var(--text-muted);margin:10px 0 6px">PHASE 2: BUY ESQUIRE (Year 3+)</div>
-        <div class="path-stat"><span class="lbl">Esquire Price (Yr 3)</span><span class="val">${fmtCr(p.price)}</span></div>
-        <div class="path-stat"><span class="lbl">EMI After Purchase</span><span class="val">${fmt(p.postBuyEMI)}</span></div>
-        <div class="path-stat"><span class="lbl">Surplus After EMI</span>
-          <span class="val" style="color:${p.postBuySurplus > 0 ? 'var(--success)' : 'var(--danger)'}">${fmt(p.postBuySurplus)}</span></div>
-        ${p.postBuySurplus < 0 ? `<div style="background:var(--danger-light);color:var(--danger);padding:8px 12px;border-radius:8px;font-size:12px;font-weight:600;margin:8px 0">⚠️ Still tight after 2 years of saving. May need income growth.</div>` : ''}
-        ` : `
-        <div class="path-stat"><span class="lbl">Property Cost</span><span class="val">${fmtCr(p.price)}</span></div>
-        <div class="path-stat"><span class="lbl">Down Payment</span><span class="val">${fmtCr(p.dp)}</span></div>
-        <div class="path-stat"><span class="lbl">Loan Amount</span><span class="val">${fmtCr(p.loan)}</span></div>
-        <div class="path-stat"><span class="lbl">Monthly EMI</span><span class="val">${fmt(p.emi)}</span></div>
-        <div class="path-stat"><span class="lbl">Monthly Outflow</span><span class="val">${fmt(p.monthlyOut)}</span></div>
-        <div class="path-stat"><span class="lbl">Monthly Surplus to Invest</span>
-          <span class="val" style="color:${p.surplus > 0 ? 'var(--success)' : 'var(--danger)'}">${fmt(p.surplus)}</span></div>
-        ${p.surplus < 0 ? `<div style="background:var(--danger-light);color:var(--danger);padding:8px 12px;border-radius:8px;font-size:12px;font-weight:600;margin:8px 0">⚠️ Tight cash flow — EMI exceeds comfortable limits. No room to invest.</div>` : ''}
-        `}
-        <div style="height:1px;background:var(--border);margin:10px 0"></div>
-        <div class="path-stat"><span class="lbl">Net Worth (Yr ${years})</span>
-          <span class="val" style="color:${['#6c5ce7','#00b894','#fd9644'][i]};font-size:16px">${fmtCr(lastYear.netWorth)}</span></div>
-        <div class="path-stat"><span class="lbl">Investment Portfolio (Yr ${years})</span><span class="val">${fmtCr(lastYear.portfolio)}</span></div>
-      </div>
-    </div>`;
+    body+=`<div style="height:1px;background:var(--bdr);margin:8px 0"></div>
+      <div class="ps2"><span class="l">Net Worth (Yr ${years})</span><span class="v" style="color:${p.color};font-size:15px">${fCr(last.netWorth)}</span></div>
+      <div class="ps2"><span class="l">Investments (Yr ${years})</span><span class="v">${fCr(last.portfolio)}</span></div>
+      <div class="ps2"><span class="l">Property Equity (Yr ${years})</span><span class="v">${fCr(last.equity)}</span></div>
+      ${last.loanPaidOff?'<div style="background:var(--okl);color:var(--ok);padding:6px 10px;border-radius:6px;font-size:11px;font-weight:600;margin-top:6px">✅ Loan fully paid off!</div>':''}`;
+
+    return`<div class="pc ${cls}"><div class="ph"><h3>${p.emoji} ${p.name}</h3><div class="ps">${p.desc}</div></div><div class="pb">${body}</div></div>`;
   }).join('');
 
   // Insight
-  const lastYears = paths.map(p => p.yearData[p.yearData.length - 1]);
-  const nws = lastYears.map(l => l.netWorth);
-  const bestIdx = nws.indexOf(Math.max(...nws));
-  const surpluses = paths.map(p => p.yearData[0].surplus);
-  const esquireMonthlyLock = paths[0].monthlyOut;
-  const sherwoodMonthlyLock = paths[1].monthlyOut;
-  const monthlyDiff = esquireMonthlyLock - sherwoodMonthlyLock;
+  const lasts=paths.map(p=>p.yearData[years-1]);
+  const nws=lasts.map(l=>l.netWorth);
+  const bi=nws.indexOf(Math.max(...nws));
+  const esquireEMI=paths[0].emi;
+  const sherwoodEMI=paths[1].emi;
+  const diff=esquireEMI-sherwoodEMI;
+  const y1=paths[0].yearData[0];
+  const y5=paths[0].yearData[Math.min(4,years-1)];
 
-  document.getElementById('decisionInsight').innerHTML = `
-    <h4>🔍 Quick Analysis</h4>
-    <p><strong>${paths[bestIdx].name}</strong> leads in net worth at Year ${years} with ${fmtCr(nws[bestIdx])}.<br><br>
-    <span class="callout">The EMI reality:</span> Esquire locks you into <strong>${fmt(esquireMonthlyLock)}/mo</strong> outflow vs Sherwood's <strong>${fmt(sherwoodMonthlyLock)}/mo</strong> — that's <span class="good">${fmt(monthlyDiff)}/mo extra</span> you can invest with Sherwood.<br><br>
-    <span class="callout">Monthly breathing room:</span> After Esquire EMI, you have <strong>${fmt(surpluses[0])}/mo</strong> left. After Sherwood EMI, you have <strong>${fmt(surpluses[1])}/mo</strong> left. ${surpluses[0] < 50000 ? '<span class="bad">⚠️ Esquire leaves very little room for SIPs, vacations, or emergencies.</span>' : ''}<br><br>
-    Over ${years} years, the ${fmt(monthlyDiff)}/mo Sherwood advantage compounds to a significantly larger investment portfolio — see the charts below.</p>`;
+  document.getElementById('decisionInsight').innerHTML=`<h4>🔍 Quick Analysis</h4><p>
+    <strong>${paths[bi].name}</strong> leads at Year ${years} with ${fCr(nws[bi])}.<br><br>
+    <span class="a">EMI reality:</span> Esquire = <strong>${fmt(esquireEMI)}/mo</strong> (${y1.emiPct.toFixed(0)}% of income). Sherwood = <strong>${fmt(sherwoodEMI)}/mo</strong>. That's <span class="g">${fmt(diff)}/mo extra</span> to invest with Sherwood.<br><br>
+    <span class="a">Salary growth helps:</span> By Year 5, Esquire EMI drops to <strong>${y5.emiPct.toFixed(0)}%</strong> of income (from ${y1.emiPct.toFixed(0)}%). The pain is front-loaded.<br><br>
+    <span class="a">Bonus power:</span> With ${inp().bonusMonths} months bonus, ${inp().bonusPrepayPct}% going to prepayment = <strong>${sm(y1.bonus*inp().bonusPrepayPct/100)}/yr</strong> off the loan. This dramatically reduces your total interest paid.</p>`;
 
   // Charts
-  renderNetWorthChart(paths, years);
-  renderCashFlowChart(paths, years);
+  const labels=Array.from({length:years},(_,i)=>`Yr ${i+1}`);
+  const colors=['#6c5ce7','#00b894','#fd9644'];
+  dc('chartNW');
+  charts.chartNW=new Chart(document.getElementById('chartNW'),{type:'line',data:{labels,datasets:paths.map((p,i)=>({label:p.name,data:p.yearData.map(d=>d.netWorth),borderColor:colors[i],backgroundColor:colors[i]+'15',fill:i===0,tension:.3,pointRadius:3,borderWidth:2.5}))},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{position:'top',labels:{usePointStyle:true,padding:14,font:{size:11}}},tooltip:{callbacks:{label:c=>c.dataset.label+': '+fCr(c.parsed.y)}}},scales:{x:{grid:{display:false}},y:{ticks:{callback:v=>fCr(v)},grid:{color:'rgba(0,0,0,.05)'}}}}});
+  dc('chartCF');
+  charts.chartCF=new Chart(document.getElementById('chartCF'),{type:'bar',data:{labels,datasets:paths.map((p,i)=>({label:p.name,data:p.yearData.map(d=>d.surplus),backgroundColor:colors[i]+'80',borderColor:colors[i],borderWidth:1}))},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{position:'top',labels:{usePointStyle:true,padding:14,font:{size:11}}},tooltip:{callbacks:{label:c=>c.dataset.label+': '+fmt(c.parsed.y)+'/mo'}}},scales:{x:{grid:{display:false}},y:{ticks:{callback:v=>fmt(v)},grid:{color:'rgba(0,0,0,.05)'}}}}});
 }
 
-function renderNetWorthChart(paths, years) {
-  const labels = Array.from({ length: years }, (_, i) => `Year ${i + 1}`);
-  const colors = ['#6c5ce7', '#00b894', '#fd9644'];
+// === RENDER YEARLY ===
+function renderYearly(){
+  const{paths,years}=calc();
+  let h=`<table><thead><tr><th style="text-align:left" rowspan="2">Year</th>
+    <th class="gs" colspan="5" style="text-align:center;color:#6c5ce7">🏢 Esquire</th>
+    <th class="gs" colspan="5" style="text-align:center;color:#00b894">🏠 Sherwood</th>
+    <th class="gs" colspan="5" style="text-align:center;color:#fd9644">⏳ Rent→Esquire</th></tr><tr>
+    ${[0,1,2].map(()=>`<th class="gs">Surplus/mo</th><th>Prepaid</th><th>Prop Equity</th><th>Portfolio</th><th>Net Worth</th>`).join('')}</tr></thead><tbody>`;
 
-  destroyChart('chartNetWorth');
-  charts['chartNetWorth'] = new Chart(document.getElementById('chartNetWorth'), {
-    type: 'line',
-    data: {
-      labels,
-      datasets: paths.map((p, i) => ({
-        label: p.name,
-        data: p.yearData.map(d => d.netWorth),
-        borderColor: colors[i],
-        backgroundColor: colors[i] + '15',
-        fill: i === 0,
-        tension: 0.3, pointRadius: 4, borderWidth: 2.5,
-      })),
-    },
-    options: {
-      responsive: true, maintainAspectRatio: false,
-      plugins: {
-        legend: { position: 'top', labels: { usePointStyle: true, padding: 16 } },
-        tooltip: { callbacks: { label: ctx => ctx.dataset.label + ': ' + fmtCr(ctx.parsed.y) } },
-      },
-      scales: {
-        x: { grid: { display: false } },
-        y: { ticks: { callback: v => fmtCr(v) }, grid: { color: 'rgba(0,0,0,0.05)' } },
-      },
-    },
-  });
-}
-
-function renderCashFlowChart(paths, years) {
-  const labels = Array.from({ length: years }, (_, i) => `Year ${i + 1}`);
-  const colors = ['#6c5ce7', '#00b894', '#fd9644'];
-
-  destroyChart('chartCashFlow');
-  charts['chartCashFlow'] = new Chart(document.getElementById('chartCashFlow'), {
-    type: 'bar',
-    data: {
-      labels,
-      datasets: paths.map((p, i) => ({
-        label: p.name,
-        data: p.yearData.map(d => d.surplus),
-        backgroundColor: colors[i] + '80',
-        borderColor: colors[i],
-        borderWidth: 1,
-      })),
-    },
-    options: {
-      responsive: true, maintainAspectRatio: false,
-      plugins: {
-        legend: { position: 'top', labels: { usePointStyle: true, padding: 16 } },
-        tooltip: { callbacks: { label: ctx => ctx.dataset.label + ': ' + fmt(ctx.parsed.y) + '/mo' } },
-      },
-      scales: {
-        x: { grid: { display: false } },
-        y: { ticks: { callback: v => fmt(v) }, grid: { color: 'rgba(0,0,0,0.05)' } },
-      },
-    },
-  });
-}
-
-// ===== RENDER YEARLY TAB =====
-function renderYearly() {
-  const { paths, years } = calculate();
-
-  let html = `<table><thead><tr>
-    <th style="text-align:left">Year End</th>
-    <th class="group-start" colspan="4" style="text-align:center;color:#6c5ce7">🏢 Esquire</th>
-    <th class="group-start" colspan="4" style="text-align:center;color:#00b894">🏠 Sherwood</th>
-    <th class="group-start" colspan="4" style="text-align:center;color:#fd9644">⏳ Rent→Esquire</th>
-  </tr><tr>
-    <th style="text-align:left"></th>
-    ${['#6c5ce7','#00b894','#fd9644'].map(c => `
-      <th class="group-start">Monthly Surplus</th>
-      <th>Property Equity</th>
-      <th>Investments</th>
-      <th>Net Worth</th>
-    `).join('')}
-  </tr></thead><tbody>`;
-
-  for (let y = 0; y < years; y++) {
-    const nws = paths.map(p => p.yearData[y].netWorth);
-    const maxNW = Math.max(...nws);
-    const minNW = Math.min(...nws);
-
-    html += `<tr><td><strong>Year ${y + 1}</strong></td>`;
-    paths.forEach((p, i) => {
-      const d = p.yearData[y];
-      const nwClass = d.netWorth === maxNW ? 'best-cell' : d.netWorth === minNW ? 'worst-cell' : '';
-      html += `<td class="group-start" style="color:${d.surplus > 0 ? 'var(--success)' : 'var(--danger)'}">${fmt(d.surplus)}/mo</td>`;
-      html += `<td>${fmtCr(d.equity)}</td>`;
-      html += `<td>${fmtCr(d.portfolio)}</td>`;
-      html += `<td class="${nwClass}">${fmtCr(d.netWorth)}</td>`;
+  for(let y=0;y<years;y++){
+    const nws=paths.map(p=>p.yearData[y].netWorth);
+    const mx=Math.max(...nws),mn=Math.min(...nws);
+    const isY15=y===14;
+    const rowStyle=isY15?' style="background:rgba(108,92,231,.06);font-weight:700"':'';
+    h+=`<tr${rowStyle}><td>${isY15?'⭐ ':''}<strong>Yr ${y+1}</strong>${y===0?' (Now)':''}</td>`;
+    paths.forEach(p=>{
+      const d=p.yearData[y];
+      const nc=d.netWorth===mx?'bc':d.netWorth===mn?'wc':'';
+      h+=`<td class="gs" style="color:${d.surplus>0?'var(--ok)':'var(--no)'}">${fmt(d.surplus)}</td>`;
+      h+=`<td>${d.prepaid>0?sm(d.prepaid):'—'}</td>`;
+      h+=`<td>${fCr(d.equity)}</td>`;
+      h+=`<td>${fCr(d.portfolio)}</td>`;
+      h+=`<td class="${nc}">${fCr(d.netWorth)}</td>`;
     });
-    html += '</tr>';
+    h+='</tr>';
   }
-  html += '</tbody></table>';
-  document.getElementById('yearlyTable').innerHTML = html;
+  h+='</tbody></table>';
+  document.getElementById('yearlyTable').innerHTML=h;
 
-  // Summary cards for final year
-  const lastYearData = paths.map(p => p.yearData[years - 1]);
-  const summaryEl = document.getElementById('yearEndSummary');
-  const colors = ['#6c5ce7', '#00b894', '#fd9644'];
-  summaryEl.innerHTML = paths.map((p, i) => {
-    const d = lastYearData[i];
-    return `<div class="card">
-      <div class="card-title" style="color:${colors[i]}">${p.emoji} ${p.name} — Year ${years}</div>
-      <div class="card-value" style="color:${colors[i]}">${fmtCr(d.netWorth)}</div>
-      <div class="card-sub">Property: ${fmtCr(d.equity)} + Investments: ${fmtCr(d.portfolio)}</div>
-    </div>`;
-  }).join('');
+  // Summary cards
+  const lasts=paths.map(p=>p.yearData[years-1]);
+  const colors=['#6c5ce7','#00b894','#fd9644'];
+  document.getElementById('yearSummary').innerHTML=paths.map((p,i)=>{const d=lasts[i];return`<div class="card"><div class="ct" style="color:${colors[i]}">${p.emoji} ${p.name} — Year ${years}</div><div class="cv" style="color:${colors[i]}">${fCr(d.netWorth)}</div><div class="cs">Property: ${fCr(d.equity)} + Investments: ${fCr(d.portfolio)}</div>${d.loanPaidOff?'<div style="color:var(--ok);font-size:11px;font-weight:600;margin-top:4px">✅ Loan paid off</div>':''}</div>`}).join('');
 
-  // Yearly insight
-  const nws = lastYearData.map(d => d.netWorth);
-  const bestIdx = nws.indexOf(Math.max(...nws));
-  const portfolios = lastYearData.map(d => d.portfolio);
-  const bestPortIdx = portfolios.indexOf(Math.max(...portfolios));
-
-  document.getElementById('yearlyInsight').innerHTML = `
-    <h4>📊 Year ${years} Verdict</h4>
-    <p><strong>${paths[bestIdx].name}</strong> has the highest net worth at <span class="good">${fmtCr(nws[bestIdx])}</span>.<br><br>
-    But look at the investment portfolios: <strong>${paths[bestPortIdx].name}</strong> builds the largest liquid portfolio at <span class="callout">${fmtCr(portfolios[bestPortIdx])}</span> — that's money you can actually use (unlike property equity which is locked).<br><br>
-    ${nws[1] > nws[0] ? `<span class="good">Sherwood + invest wins over Esquire</span> — the lower EMI advantage compounds significantly over ${years} years.` :
-    nws[0] - nws[1] < nws[0] * 0.1 ? `The gap between Esquire and Sherwood is only <strong>${fmtCr(Math.abs(nws[0] - nws[1]))}</strong> — arguably the "price" for the Esquire lifestyle upgrade.` :
-    `Esquire pulls ahead by <strong>${fmtCr(nws[0] - nws[1])}</strong>, largely driven by property appreciation on the higher base value.`}</p>`;
+  // Insight
+  const nws=lasts.map(d=>d.netWorth);const bi=nws.indexOf(Math.max(...nws));
+  const ports=lasts.map(d=>d.portfolio);const bpi=ports.indexOf(Math.max(...ports));
+  document.getElementById('yearlyInsight').innerHTML=`<h4>📊 Year ${years} Verdict</h4><p>
+    <strong>${paths[bi].name}</strong> has the highest net worth at <span class="g">${fCr(nws[bi])}</span>.<br>
+    <strong>${paths[bpi].name}</strong> has the most liquid investments at <span class="a">${fCr(ports[bpi])}</span> — money you can actually access.<br><br>
+    ${paths[0].yearData[years-1].loanPaidOff?'<span class="g">Esquire loan is fully paid off by Year '+paths[0].yearData.findIndex(d=>d.loanPaidOff+1)+'!</span>':''}
+    ${nws[1]>nws[0]?`<span class="g">Sherwood + invest wins by ${fCr(nws[1]-nws[0])}</span>. The lower EMI compounds significantly.`:`Esquire leads by ${fCr(nws[0]-nws[1])} — ${((nws[0]-nws[1])/nws[0]*100).toFixed(0)}% gap. ${(nws[0]-nws[1])<nws[0]*0.05?'Basically a wash — decide based on lifestyle.':''}`}</p>`;
 }
 
-// ===== RENDER WHAT-IF TAB =====
-function renderWhatIf() {
-  const esquireApp = +document.getElementById('wiEsquire').value;
-  const sherwoodApp = +document.getElementById('wiSherwood').value;
-  const investReturn = +document.getElementById('wiInvest').value;
-  const rentEsc = +document.getElementById('wiRentEsc').value;
-  const years = +document.getElementById('wiYears').value;
+// === PRESETS ===
+function applyPreset(name){
+  const presets={
+    base:{wiEq:4,wiSw:3,wiInv:13,wiRE:5,wiYr:10},
+    reBull:{wiEq:8,wiSw:6,wiInv:13,wiRE:5,wiYr:10},
+    reBear:{wiEq:1,wiSw:0.5,wiInv:13,wiRE:5,wiYr:10},
+    eqBull:{wiEq:4,wiSw:3,wiInv:18,wiRE:5,wiYr:10},
+    eqBear:{wiEq:4,wiSw:3,wiInv:8,wiRE:5,wiYr:10},
+    nightmare:{wiEq:0,wiSw:0,wiInv:8,wiRE:8,wiYr:10},
+    dream:{wiEq:8,wiSw:6,wiInv:18,wiRE:3,wiYr:10},
+  };
+  const p=presets[name];if(!p)return;
+  document.getElementById('wiEq').value=p.wiEq;document.getElementById('wiSw').value=p.wiSw;
+  document.getElementById('wiInv').value=p.wiInv;document.getElementById('wiRE').value=p.wiRE;
+  document.getElementById('wiYr').value=p.wiYr;
+  document.querySelectorAll('.preset-btn').forEach(b=>b.classList.remove('active'));
+  event.target.classList.add('active');
+  renderWhatIf();
+}
 
-  document.getElementById('wiEsquireVal').textContent = esquireApp + '%';
-  document.getElementById('wiSherwoodVal').textContent = sherwoodApp + '%';
-  document.getElementById('wiInvestVal').textContent = investReturn + '%';
-  document.getElementById('wiRentEscVal').textContent = rentEsc + '%';
-  document.getElementById('wiYearsVal').textContent = years;
+// === RENDER WHAT-IF ===
+function renderWhatIf(){
+  const eqA=+document.getElementById('wiEq').value;
+  const swA=+document.getElementById('wiSw').value;
+  const invR=+document.getElementById('wiInv').value;
+  const rE=+document.getElementById('wiRE').value;
+  const yrs=+document.getElementById('wiYr').value;
+  document.getElementById('wiEqV').textContent=eqA+'%';
+  document.getElementById('wiSwV').textContent=swA+'%';
+  document.getElementById('wiInvV').textContent=invR+'%';
+  document.getElementById('wiREV').textContent=rE+'%';
+  document.getElementById('wiYrV').textContent=yrs;
 
-  const { paths } = calculate({
-    esquireAppreciation: esquireApp,
-    sherwoodAppreciation: sherwoodApp,
-    investReturn,
-    rentEsc,
-    years,
+  const{paths}=calc({eqApp:eqA,swApp:swA,investReturn:invR,rentEsc:rE,years:yrs});
+  const labels=Array.from({length:yrs},(_,i)=>`Yr ${i+1}`);
+  const colors=['#6c5ce7','#00b894','#fd9644'];
+
+  // Stacked bar chart for net worth (property + investments)
+  dc('chartWINW');
+  const datasets=[];
+  paths.forEach((p,i)=>{
+    datasets.push({label:p.name+' — Property',data:p.yearData.map(d=>Math.max(0,d.equity)),backgroundColor:colors[i]+'90',stack:'s'+i,borderRadius:4});
+    datasets.push({label:p.name+' — Investments',data:p.yearData.map(d=>d.portfolio),backgroundColor:colors[i]+'40',stack:'s'+i,borderRadius:4});
   });
+  charts.chartWINW=new Chart(document.getElementById('chartWINW'),{type:'bar',data:{labels,datasets},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{position:'top',labels:{usePointStyle:true,padding:10,font:{size:10}}},tooltip:{callbacks:{label:c=>c.dataset.label+': '+fCr(c.parsed.y)}}},scales:{x:{grid:{display:false}},y:{ticks:{callback:v=>fCr(v)},grid:{color:'rgba(0,0,0,.05)'},stacked:true}}}});
 
-  // Charts
-  const labels = Array.from({ length: years }, (_, i) => `Year ${i + 1}`);
-  const colors = ['#6c5ce7', '#00b894', '#fd9644'];
-
-  destroyChart('chartWhatIfNW');
-  charts['chartWhatIfNW'] = new Chart(document.getElementById('chartWhatIfNW'), {
-    type: 'line',
-    data: {
-      labels,
-      datasets: paths.map((p, i) => ({
-        label: p.name, data: p.yearData.map(d => d.netWorth),
-        borderColor: colors[i], tension: 0.3, pointRadius: 4, borderWidth: 2.5, fill: false,
-      })),
-    },
-    options: {
-      responsive: true, maintainAspectRatio: false,
-      plugins: { legend: { position: 'top', labels: { usePointStyle: true, padding: 16 } },
-        tooltip: { callbacks: { label: ctx => ctx.dataset.label + ': ' + fmtCr(ctx.parsed.y) } } },
-      scales: { x: { grid: { display: false } }, y: { ticks: { callback: v => fmtCr(v) }, grid: { color: 'rgba(0,0,0,0.05)' } } },
-    },
-  });
-
-  destroyChart('chartWhatIfInv');
-  charts['chartWhatIfInv'] = new Chart(document.getElementById('chartWhatIfInv'), {
-    type: 'line',
-    data: {
-      labels,
-      datasets: paths.map((p, i) => ({
-        label: p.name, data: p.yearData.map(d => d.portfolio),
-        borderColor: colors[i], backgroundColor: colors[i] + '15', fill: i === 1, tension: 0.3, pointRadius: 3, borderWidth: 2,
-      })),
-    },
-    options: {
-      responsive: true, maintainAspectRatio: false,
-      plugins: { legend: { position: 'top', labels: { usePointStyle: true, padding: 16 } },
-        tooltip: { callbacks: { label: ctx => ctx.dataset.label + ': ' + fmtCr(ctx.parsed.y) } } },
-      scales: { x: { grid: { display: false } }, y: { ticks: { callback: v => fmtCr(v) }, grid: { color: 'rgba(0,0,0,0.05)' } } },
-    },
-  });
+  dc('chartWIInv');
+  charts.chartWIInv=new Chart(document.getElementById('chartWIInv'),{type:'line',data:{labels,datasets:paths.map((p,i)=>({label:p.name,data:p.yearData.map(d=>d.portfolio),borderColor:colors[i],backgroundColor:colors[i]+'15',fill:i===1,tension:.3,pointRadius:3,borderWidth:2}))},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{position:'top',labels:{usePointStyle:true,padding:14,font:{size:11}}},tooltip:{callbacks:{label:c=>c.dataset.label+': '+fCr(c.parsed.y)}}},scales:{x:{grid:{display:false}},y:{ticks:{callback:v=>fCr(v)},grid:{color:'rgba(0,0,0,.05)'}}}}});
 
   // Table
-  const lastYears = paths.map(p => p.yearData[p.yearData.length - 1]);
-  const nws = lastYears.map(d => d.netWorth);
-  const maxNW = Math.max(...nws);
-
-  let thtml = `<table><thead><tr>
-    <th style="text-align:left">Metric</th>${paths.map(p => `<th>${p.emoji} ${p.name}</th>`).join('')}
-  </tr></thead><tbody>`;
-
-  const rows = [
-    { label: 'Property Value', key: 'propVal', fmt: fmtCr },
-    { label: 'Loan Outstanding', key: 'loanBal', fmt: fmtCr },
-    { label: 'Property Equity', key: 'equity', fmt: fmtCr },
-    { label: 'Investment Portfolio', key: 'portfolio', fmt: fmtCr },
-    { label: 'Total Net Worth', key: 'netWorth', fmt: fmtCr, highlight: true },
-    { label: 'Monthly Surplus', key: 'surplus', fmt: fmt },
-  ];
-
-  rows.forEach(r => {
-    thtml += `<tr${r.highlight ? ' style="font-weight:700;background:rgba(108,92,231,0.04)"' : ''}><td>${r.label}</td>`;
-    const vals = lastYears.map(d => d[r.key]);
-    const best = r.highlight ? Math.max(...vals) : null;
-    lastYears.forEach((d, i) => {
-      const cls = r.highlight && d[r.key] === best ? 'best-cell' : '';
-      thtml += `<td class="${cls}">${r.fmt(d[r.key])}</td>`;
-    });
-    thtml += '</tr>';
+  const lasts=paths.map(p=>p.yearData[yrs-1]);
+  const nws=lasts.map(d=>d.netWorth);const mx=Math.max(...nws);
+  const rows=[{l:'Property Value',k:'propVal',f:fCr},{l:'Loan Outstanding',k:'loanBal',f:fCr},{l:'Property Equity',k:'equity',f:fCr},{l:'Investment Portfolio',k:'portfolio',f:fCr},{l:'Total Net Worth',k:'netWorth',f:fCr,hl:true},{l:'Monthly Surplus',k:'surplus',f:fmt},{l:'EMI as % of Income',k:'emiPct',f:v=>v.toFixed(0)+'%'}];
+  let t=`<table><thead><tr><th style="text-align:left">Metric</th>${paths.map(p=>`<th>${p.emoji} ${p.name}</th>`).join('')}</tr></thead><tbody>`;
+  rows.forEach(r=>{
+    t+=`<tr${r.hl?' style="font-weight:700;background:rgba(108,92,231,.04)"':''}><td>${r.l}</td>`;
+    const vals=lasts.map(d=>d[r.k]);const best=r.hl?Math.max(...vals):null;
+    lasts.forEach(d=>{const c=r.hl&&d[r.k]===best?'bc':'';t+=`<td class="${c}">${r.f(d[r.k])}</td>`});
+    t+='</tr>';
   });
-  thtml += '</tbody></table>';
-  document.getElementById('whatIfTable').innerHTML = thtml;
+  t+='</tbody></table>';
+  document.getElementById('wiTable').innerHTML=t;
 
   // Insight
-  const bestIdx = nws.indexOf(maxNW);
-  const esquireNW = nws[0];
-  const sherwoodNW = nws[1];
-  const diff = Math.abs(esquireNW - sherwoodNW);
-  const diffPct = (diff / Math.max(esquireNW, sherwoodNW) * 100).toFixed(1);
-
-  document.getElementById('whatIfInsight').innerHTML = `
-    <h4>🎯 Under These Assumptions</h4>
-    <p>At <strong>${esquireApp}% Esquire appreciation</strong> and <strong>${investReturn}% investment returns</strong>:<br><br>
-    ${sherwoodNW > esquireNW ?
-      `<span class="good">Sherwood + investing wins by ${fmtCr(diff)}</span> (${diffPct}% more). The investment returns at ${investReturn}% outpace the property appreciation gap. The lower EMI gives you real compounding power.` :
-      diff < esquireNW * 0.05 ?
-      `The difference is only <strong>${fmtCr(diff)}</strong> (${diffPct}%) — essentially a wash. At this point, the decision is really about <em>where you want to live</em>, not the money.` :
-      `<span class="callout">Esquire leads by ${fmtCr(diff)}</span> (${diffPct}%). Property appreciation on the higher base value (₹7.1Cr vs ₹3.45Cr) is driving this gap.`
-    }<br><br>
-    <strong>Try this:</strong> Set Esquire appreciation to 2% (pessimistic) and investment returns to 15% (good equity market). See how dramatically the picture changes.</p>`;
+  const bi=nws.indexOf(mx);const diff=Math.abs(nws[0]-nws[1]);const pct=(diff/Math.max(nws[0],nws[1])*100).toFixed(1);
+  document.getElementById('wiInsight').innerHTML=`<h4>🎯 Under These Assumptions</h4><p>
+    At <strong>${eqA}% Esquire appreciation</strong> & <strong>${invR}% investment returns</strong>:<br><br>
+    ${nws[1]>nws[0]?`<span class="g">Sherwood + investing wins by ${fCr(diff)}</span> (${pct}%). Lower EMI = more compounding power.`:diff<nws[0]*.05?`Gap is only <strong>${fCr(diff)}</strong> (${pct}%) — essentially a wash. Decide on lifestyle.`:`<span class="a">Esquire leads by ${fCr(diff)}</span> (${pct}%). Higher base value drives the gap.`}<br><br>
+    <strong>Try:</strong> Set Esquire to 1% (pessimistic) and investments to 16%. See how the picture flips.</p>`;
 }
 
-// ===== THEME =====
-function toggleTheme() {
-  const html = document.documentElement;
-  const next = html.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
-  html.setAttribute('data-theme', next);
-  document.querySelector('.theme-btn').textContent = next === 'dark' ? 'Light Mode' : 'Dark Mode';
-}
+// === THEME ===
+function toggleTheme(){const h=document.documentElement;const n=h.getAttribute('data-theme')==='dark'?'light':'dark';h.setAttribute('data-theme',n);document.querySelector('.thm').textContent=n==='dark'?'Light':'Dark'}
 
-// ===== TABS =====
-document.querySelectorAll('.tab').forEach(btn => {
-  btn.addEventListener('click', () => {
-    document.querySelectorAll('.tab').forEach(b => b.classList.remove('active'));
-    document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
-    btn.classList.add('active');
-    document.getElementById('tab-' + btn.dataset.tab).classList.add('active');
-    if (btn.dataset.tab === 'decision') renderDecision();
-    if (btn.dataset.tab === 'yearly') renderYearly();
-    if (btn.dataset.tab === 'whatif') renderWhatIf();
-  });
-});
+// === TABS ===
+document.querySelectorAll('.tab').forEach(b=>{b.addEventListener('click',()=>{
+  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+  document.querySelectorAll('.pnl').forEach(p=>p.classList.remove('active'));
+  b.classList.add('active');document.getElementById('tab-'+b.dataset.tab).classList.add('active');
+  if(b.dataset.tab==='decision')renderDecision();if(b.dataset.tab==='yearly')renderYearly();if(b.dataset.tab==='whatif')renderWhatIf();
+})});
 
-// ===== INPUT EVENTS =====
-document.querySelectorAll('.inputs-card input').forEach(inp => {
-  inp.addEventListener('change', () => { renderDecision(); });
-});
+// === INPUT EVENTS ===
+document.querySelectorAll('.inp-card input').forEach(i=>{i.addEventListener('change',()=>{renderDecision()})});
+['wiEq','wiSw','wiInv','wiRE','wiYr'].forEach(id=>{document.getElementById(id)?.addEventListener('input',()=>{renderWhatIf()})});
 
-// What-if sliders
-['wiEsquire', 'wiSherwood', 'wiInvest', 'wiRentEsc', 'wiYears'].forEach(id => {
-  document.getElementById(id)?.addEventListener('input', () => { renderWhatIf(); });
-});
-
-// ===== INIT =====
+// === INIT ===
 renderDecision();
 </script>
-
 </body>
 </html>
